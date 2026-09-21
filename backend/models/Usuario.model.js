@@ -22,7 +22,16 @@ const usuarioSchema = new mongoose.Schema(
     contrasena: {
       type: String,
       required: [true, "La contraseña es obligatoria"],
-      select: false, 
+      select: false, // nunca se devuelve por defecto en las consultas
+    },
+    // Usados por recuperarPassword en auth.controller.js
+    tokenRecuperacion: {
+      type: String,
+      select: false,
+    },
+    tokenRecuperacionExpira: {
+      type: Date,
+      select: false,
     },
   },
   {
