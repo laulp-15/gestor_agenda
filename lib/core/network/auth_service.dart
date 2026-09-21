@@ -1,12 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'api_config.dart';
 
 class AuthService {
-  // OJO con esta URL, depende de dónde estés probando:
-  // - Emulador Android           -> http://10.0.2.2:3000/api/auth
-  // - Chrome / Windows / iOS sim -> http://localhost:3000/api/auth
-  // - Celular físico             -> http://TU_IP_LOCAL:3000/api/auth (ej: http://192.168.1.5:3000/api/auth)
-  static const String baseUrl = 'http://localhost:3000/api/auth';
+  static const String baseUrl = '${ApiConfig.host}/api/auth';
 
   static Future<Map<String, dynamic>> login({
     required String correo,
@@ -27,6 +24,62 @@ class AuthService {
       return {
         'exito': false,
         'mensaje': datos['mensaje'] ?? 'No se pudo iniciar sesión',
+      };
+    } catch (e) {
+      return {
+        'exito': false,
+        'mensaje': 'No se pudo conectar con el servidor. Revisa que esté encendido.',
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> recuperarPassword({
+    required String correo,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/forgot-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'correo': correo}),
+      );
+
+      final datos = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200) {
+        return {'exito': true, ...datos};
+      }
+      return {
+        'exito': false,
+        'mensaje': datos['mensaje'] ?? 'No se pudo procesar la solicitud',
+      };
+    } catch (e) {
+      return {
+        'exito': false,
+        'mensaje': 'No se pudo conectar con el servidor. Revisa que esté encendido.',
+      };
+    }
+  }
+
+  static Future<Map<String, dynamic>> obtenerPerfil({
+    required String token,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/perfil'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final datos = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200) {
+        return {'exito': true, ...datos};
+      }
+      return {
+        'exito': false,
+        'mensaje': datos['mensaje'] ?? 'No se pudo obtener el perfil',
       };
     } catch (e) {
       return {
