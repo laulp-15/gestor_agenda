@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/routes/app_routers.dart';
 import '../../../../core/network/auth_service.dart';
+import '../../../../core/network/token_storage.dart';
 import '../../../../core/utils/validators.dart';
 import '../widgets/app_text_field.dart';
 import '../widgets/app_button.dart';
@@ -27,9 +28,9 @@ class _LoginState extends State<Login> {
   }
 
   void _mostrarMensaje(String mensaje) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(mensaje)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje)),
+    );
   }
 
   Future<void> _iniciarSesion() async {
@@ -53,9 +54,9 @@ class _LoginState extends State<Login> {
     setState(() => cargando = false);
 
     if (resultado['exito'] == true) {
-      // Aquí es donde, más adelante, guardarán resultado['token']
-      // (por ejemplo con shared_preferences) y navegarán a la agenda.
-      _mostrarMensaje('Inicio de sesión exitoso');
+      await TokenStorage.guardarToken(resultado['token']);
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, AppRoutes.agenda);
     } else {
       _mostrarMensaje(resultado['mensaje']);
     }
