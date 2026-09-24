@@ -117,6 +117,13 @@ flutter run
 
 Las rutas protegidas requieren el header `Authorization: Bearer <token>`, obtenido al iniciar sesión.
 
+## Despliegue
+
+| Parte | URL |
+|---|---|
+| Backend (API) | https://gestor-agenda-eta.vercel.app/ |
+| Frontend (web) | https://gestor-agenda-o5j3.vercel.app/ |
+
 ## Autores
 
 - Laura Sofía Ulloa Panesso
